@@ -1,0 +1,46 @@
+ifeq ($(SWARMHOME),)
+SWARMHOME=/usr/local
+endif
+APPLICATION=abtps-s-m
+APPVERSION=0.1w-golem3-abm
+BUGADDRESS=m.morini@labor-torino.it
+
+OBJECTS=main.o ModelSwarm.o BatchSwarm.o Evaluator.o \
+	Golem.o GolemNews.o GolemRule.o \
+	GenomaBucket.o \
+	TimeFilter.o \
+	OrderList.o Order.o \
+	Dispatcher.o Output.o Tester.o \
+	DBInterface_S.o	Spinner.o
+
+#when compiling for weaving chang DBInterface_S into _W and Spinner into Weaver
+#and comment and un-comment corresponding objects below
+
+DATAFILES=abtps-s.scm
+
+include $(SWARMHOME)/etc/swarm/Makefile.appl
+
+override CPPFLAGS += -DSPINNING -DITEMS=8192
+
+main.o: main.m ObserverSwarm.h 
+ModelSwarm.o: ModelSwarm.h ModelSwarm.m GenomaBucket.h TimeFilter.h \
+	DBInterface_S.h DBInterface_W.h OrderList.h Order.h \
+	Dispatcher.h defines.h \
+	Spinner.h
+
+BatchSwarm.o: BatchSwarm.h BatchSwarm.m ModelSwarm.h Macro.h
+Evaluator.o: Evaluator.h Evaluator.m Dispatcher.h Macro.h defines.h
+Setupper.o: Setupper.h Setupper.m
+SaturationSetupper.o: SaturationSetupper.h SaturationSetupper.m
+Golem.o: Golem.h Golem.m GolemRule.h GolemNews.h GolemParms.h
+GolemRule.o: GolemRule.h GolemRule.m GolemParms.h
+GolemNews.o: GolemNews.h GolemNews.m GolemParms.h
+GenomaBucket.o: GenomaBucket.h GenomaBucket.m defines.h
+TimeFilter.o: TimeFilter.h TimeFilter.m
+DBInterface_S.o: DBInterface_S.h DBInterface_S.m Macro.h
+OrderList.o: OrderList.h OrderList.m DBInterface_S.h DBInterface_W.h Macro.h
+Order.o: Order.h Order.m DBInterface_S.h DBInterface_W.h Macro.h
+Dispatcher.o: Dispatcher.h Dispatcher.m Weaver.h Spinner.h OrderList.h Order.h Macro.h
+Spinner.o: Spinner.h Spinner.m Macro.h defines.h
+Output.o: Output.h Output.m Golem.h defines.h 
+Tester.o: Tester.h Tester.m GolemRule.h
